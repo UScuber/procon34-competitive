@@ -205,7 +205,7 @@ struct Field {
     }
     
     // ally turn
-    if(!(current_turn & 1)){
+    if(!(current_turn & 1) ^ side){
       for(const Point agent : ally_agents) agent_poses[agent]++;
       // break
       for(const auto &act : act_list[Action::Break]){
@@ -304,7 +304,7 @@ struct Field {
     }
     
     // ally turn
-    if(!(current_turn & 1)){
+    if(!(current_turn & 1) ^ side){
       for(const Point agent : ally_agents) agent_poses[agent]++;
       // break
       for(auto *act : act_list[Action::Break]){
@@ -402,7 +402,7 @@ struct Field {
 
   // s: 味方:0, 敵:1
   bool is_legal_action(const Actions &acts, int s = -1) const{
-    if(s == -1) s = side;
+    if(s == -1) s = (current_turn & 1) ^ side;
     assert(acts.size() == ally_agents.size());
     Actions act_list[4];
     std::map<Point, int> agent_poses;
@@ -414,7 +414,7 @@ struct Field {
     }
     
     // ally turn
-    if(!side){
+    if(!s){
       for(const Point agent : ally_agents) agent_poses[agent]++;
       // break
       for(const auto &act : act_list[Action::Break]){
@@ -471,11 +471,11 @@ struct Field {
     current_turn++;
   }
   Agents &get_now_turn_agents(){
-    if(current_turn & 1) return enemy_agents;
+    if((current_turn & 1) ^ side) return enemy_agents;
     return ally_agents;
   }
   const Agents &get_now_turn_agents() const{
-    if(current_turn & 1) return enemy_agents;
+    if((current_turn & 1) ^ side) return enemy_agents;
     return ally_agents;
   }
   bool is_finished() const{ return current_turn == final_turn; }

@@ -309,7 +309,7 @@ Actions calculate_build_route(const Walls &build_walls, const Field &field){
   const int agents_num = agents.size();
   const State ally = field.get_state(agents[0]) & State::Human; // agentから見た味方
   const State enemy = ally ^ State::Human; // agentから見た敵
-  assert((ally == State::Enemy) == (field.current_turn & 1));
+  assert((ally == State::Enemy) == ((field.current_turn & 1) ^ field.side));
   assert(ally == State::Ally || ally == State::Enemy);
 
   const State ally_wall = ally == State::Ally ? State::WallAlly : State::WallEnemy; // agentから見た味方のwall
