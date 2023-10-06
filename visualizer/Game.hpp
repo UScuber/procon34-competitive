@@ -146,23 +146,25 @@ void Game::display_field(void) const {
 
 void Game::display_details(Field &field) const {
 	if(now_turn == TEAM::RED){
-		normal_font(U"赤チームの手番").draw(850, 600, Palette::Red);
+		normal_font(U"赤チームの手番").draw(800, 550, Palette::Red);
 	}else{
-		normal_font(U"青チームの手番").draw(850, 600, Palette::Blue);
+		normal_font(U"青チームの手番").draw(800, 550, Palette::Blue);
 	}
 	const Array<int> building_red = field.get_building(TEAM::RED);
 	const Array<int> building_blue = field.get_building(TEAM::BLUE);
-	normal_font(U"赤ポイント:{}"_fmt(field.get_point(TEAM::RED))).draw(800, 100, ((now_turn == TEAM::RED) ? Palette::Red : Palette::Black));
-	small_font(U"城壁:{}  陣地:{}  城:{}"_fmt(building_red[0], building_red[1], building_red[2])).draw(850, 175, ((now_turn == TEAM::RED) ? Palette::Red : Palette::Black));
-	normal_font(U"青ポイント:{}"_fmt(field.get_point(TEAM::BLUE))).draw(800, 250, ((now_turn == TEAM::BLUE) ? Palette::Blue: Palette::Black));
-	small_font(U"城壁:{}  陣地:{}  城:{}"_fmt(building_blue[0], building_blue[1], building_blue[2])).draw(850, 325, ((now_turn == TEAM::BLUE) ? Palette::Blue: Palette::Black));
-	normal_font(U"ターン数:{}/{}"_fmt(turn_num_now + 1, turn_num)).draw(850, 400, Palette::Black);
+	normal_font(U"赤ポイント:{}"_fmt(field.get_point(TEAM::RED))).draw(800, 50, ((now_turn == TEAM::RED) ? Palette::Red : Palette::Black));
+	small_font(U"城壁:{}  陣地:{}  城:{}"_fmt(building_red[0], building_red[1], building_red[2])).draw(850, 125, ((now_turn == TEAM::RED) ? Palette::Red : Palette::Black));
+	normal_font(U"青ポイント:{}"_fmt(field.get_point(TEAM::BLUE))).draw(800, 200, ((now_turn == TEAM::BLUE) ? Palette::Blue: Palette::Black));
+	small_font(U"城壁:{}  陣地:{}  城:{}"_fmt(building_blue[0], building_blue[1], building_blue[2])).draw(850, 275, ((now_turn == TEAM::BLUE) ? Palette::Blue: Palette::Black));
+	const int point_diff = field.get_point(TEAM::RED) - field.get_point(TEAM::BLUE);
+	normal_font(U"点差:{}"_fmt(point_diff)).draw(800, 350, (point_diff >= 0) ? ((point_diff == 0) ? Palette::Black : Palette::Red) : Palette::Blue);
+	normal_font(U"ターン数:{}/{}"_fmt(turn_num_now + 1, turn_num)).draw(800, 450, Palette::Black);
 }
 
 void Game::give_solver_initialize(const bool is_first, Field &field){
 	// フィールドの縦横
 	child.ostream() << HEIGHT << std::endl << WIDTH << std::endl;
-	// プログラム側を赤色とする
+	// solver.exeを赤色とする
 	child.ostream() << ((is_first) ? 0 : 1) << std::endl;
 	// ターン数
 	child.ostream() << turn_num << std::endl;
@@ -205,7 +207,9 @@ void Game::receive_solver(const TEAM team, Field &field){
 void Game::receive_build_plan(Field &field){
 	for(int h = 0; h < HEIGHT; h++){
 		for(int w = 0; w < WIDTH; w++){
-			if(get_grid_rect({ w, h }).rightClicked()){
+			if(get_grid_rect({ w, h }).rightClicked()
+				or get_grid_rect({w,h}).leftClicked()
+				or (get_grid_rect({w,h}).mouseOver() and KeyLControl.down() )) {
 				if(field.get_cell(h, w) & CELL::CASTLE){
 					continue;
 				}

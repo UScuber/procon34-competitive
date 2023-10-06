@@ -119,14 +119,16 @@ void CvC::execute_match(void){
 		//}
 		//Console << U"------------------------------------------------------------------------------------";
 		if(now_turn == TEAM::RED){
-			turn_solver();
-			getData().calc_area();
-			getData().calc_point(TEAM::RED);
-			getData().calc_point(TEAM::BLUE);
+			if (turn_solver()) {
+				getData().calc_area();
+				getData().calc_point(TEAM::RED);
+				getData().calc_point(TEAM::BLUE);
+			}
 		}else{
-			turn_server();
-			getData().calc_point(TEAM::RED);
-			getData().calc_point(TEAM::BLUE);
+			if (turn_server()) {
+				getData().calc_point(TEAM::RED);
+				getData().calc_point(TEAM::BLUE);
+			}
 		}
 	}
 }
@@ -185,7 +187,7 @@ void CvC::display_field(void) const {
 	for(int h = 0; h < HEIGHT; h++){
 		for(int w = 0; w < WIDTH; w++){
 			if(is_build_plan[h][w]){
-				get_grid_rect({ w,h }).drawFrame(1, 1, Palette::Darkviolet);
+				get_grid_rect({ w,h }).drawFrame(3, 0, Palette::Orange);
 			}
 		}
 	}
@@ -197,8 +199,8 @@ void CvC::update(){
 }
 
 void CvC::draw() const {
-	getData().display_grid();
 	getData().display_actors();
 	display_field();
+	getData().display_grid();
 	display_details(getData());
 }

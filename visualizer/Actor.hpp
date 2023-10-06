@@ -159,7 +159,6 @@ void Craftsman::input_act(ChildProcess &child, Field &field){
 	int direction_num;
 	std::string act_str;
 	child.istream() >> direction_num >> act_str;
-	Print << direction_num << U"        " << Unicode::Widen(act_str);
 	const Point direction_point = range_move[direction_num];
 	if(act_str == "move"){
 		this->act = ACT::MOVE;
